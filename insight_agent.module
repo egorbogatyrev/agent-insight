@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * @file
+ * Includes hooks and core functions for Insight Agent module.
+ */
+
+// Include necessary files.
+module_load_include('inc', 'insight_agent', 'insight_agent.admin');
+
+/**
+ * Implements hook_menu().
+ */
+function insight_agent_menu() {
+  $items['admin/config/services/insight-agent'] = array(
+    'title' => 'Insight Agent',
+    'description' => 'Configuration page for the Insight Agent module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('insight_agent_configuration_page'),
+    'access arguments' => array('administer site configuration'),
+  );
+
+  $items['insight-agent/get'] = array(
+    'title' => 'Request from Insight Server',
+    'page callback' => 'insight_agent_request_callback',
+    'access callback' => 'insight_agent_access_callback',
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_ctools_plugin_type().
+ */
+function insight_agent_ctools_plugin_type() {
+  return array(
+    'testsuits' => array(
+      'cache' => TRUE,
+    ),
+    'testcases' => array(
+      'cache' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function insight_agent_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'insight_agent' && !empty($plugin)) {
+    return "plugins/" . $plugin;
+  }
+}
